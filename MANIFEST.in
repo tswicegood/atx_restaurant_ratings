@@ -1,0 +1,2 @@
+include setup.py README.rst MANIFEST.in LICENSE
+recursive-include atx_restaurant_ratings/static *
