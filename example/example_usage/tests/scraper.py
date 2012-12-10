@@ -1,5 +1,6 @@
 import datetime
 import random
+import types
 
 from django.template.loader import render_to_string
 from django.test import TestCase
@@ -62,3 +63,35 @@ class TestOf_get_all_rows_of_data(TestCase):
 
             rows = scraper.get_all_rows_of_data()
             self.assertEqual(r, len(rows))
+
+
+def generator_fake_row():
+    def generate_fake_cell():
+        r = random.randint(1, 10)
+        return MagicMock(text="Random Text %s" % r)
+
+    row = MagicMock()
+    row.findall.return_value = [generate_fake_cell() for i in range(6)]
+    return row
+
+
+def generate_fake_rows():
+    r = random.randint(1, 10)
+    return [generator_fake_row() for i in range(r)]
+
+
+class TestOf_extract_raw_data(TestCase):
+    def test_returns_a_generator(self):
+        result = scraper.extract_raw_data(generate_fake_rows())
+        self.assertTrue(type(result) is types.GeneratorType)
+
+    def test_each_yielded_item_is_a_dictionary(self):
+        result = scraper.extract_raw_data(generate_fake_rows())
+        for a in result:
+            self.assertTrue(type(a) is dict)
+
+    def test_keys_for_dict_are_the_labels(self):
+        row = scraper.extract_raw_data(generate_fake_rows()).next()
+        expected = sorted(scraper.LABELS)
+        actual = sorted(row.keys())
+        self.assertEqual(expected, actual)
