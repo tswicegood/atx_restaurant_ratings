@@ -1,6 +1,7 @@
 import datetime
 import random
 
+from django.template.loader import render_to_string
 from django.test import TestCase
 from mock import patch, MagicMock
 
@@ -46,3 +47,18 @@ class TestOf_get_start_and_end_dates(TestCase):
             mock.return_value = doc
             actual = scraper.get_start_and_end_dates()
             self.assertEqual(['Alice', 'Bob'], actual)
+
+
+class TestOf_get_all_rows_of_data(TestCase):
+    def test_returns_all_matching_rows(self):
+        r = random.randint(1, 100)
+        content = render_to_string('for_testing/empty_rows.html',
+                {'range': range(r)})
+
+        response = MagicMock(content=content)
+
+        with patch.object(scraper, 'requests') as mock:
+            mock.post.return_value = response
+
+            rows = scraper.get_all_rows_of_data('start', 'end')
+            self.assertEqual(r, len(rows))
