@@ -13,13 +13,14 @@ def get_start_and_end_dates():
     return [a.text.strip() for a in doc.find('#col3_content ul li b')]
 
 
-def get_all_rows_of_data(start, end):
+def get_all_rows_of_data():
     """
     Fetch all of the rows from the city and return them
 
     Note that this fetches *all* rows, so you need to filter out any
     that you don't want to deal with.
     """
+    start, end = get_start_and_end_dates()
     request_data = {
         'begdate': start,
         'enddate': end,
@@ -63,8 +64,5 @@ def scrape(generator=False):
     calling this function.  That allows you to only iterate over the
     data once and not use any more memory than necessary.
     """
-    start, end = get_start_and_end_dates()
-    rows = get_all_rows_of_data(start, end)
-
-    result = extract_raw_data(rows)
+    result = extract_raw_data(get_all_rows_of_data())
     return result if generator else [a for a in result]

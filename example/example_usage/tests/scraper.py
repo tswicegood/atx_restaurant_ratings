@@ -60,5 +60,5 @@ class TestOf_get_all_rows_of_data(TestCase):
         with patch.object(scraper, 'requests') as mock:
             mock.post.return_value = response
 
-            rows = scraper.get_all_rows_of_data('start', 'end')
+            rows = scraper.get_all_rows_of_data()
             self.assertEqual(r, len(rows))
