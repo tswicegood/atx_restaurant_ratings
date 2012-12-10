@@ -1,6 +1,7 @@
 example/.sass-cache/
-example/static/
 example/bundle/
+example/static/
+example/project.db
 MANIFEST
 dist/
 *.egg-info
