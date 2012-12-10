@@ -51,7 +51,7 @@ class TestOf_get_start_and_end_dates(TestCase):
 
 class TestOf_get_all_rows_of_data(TestCase):
     def test_returns_all_matching_rows(self):
-        r = random.randint(1, 100)
+        r = random.randint(1, 10)
         content = render_to_string('for_testing/empty_rows.html',
                 {'range': range(r)})
 
