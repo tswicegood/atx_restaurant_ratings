@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>scraper.py</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id="background"></div>
+<div id='container'>
+  <div class='section'>
+    <div class='docs'><h1>scraper.py</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kn">from</span> <span class="nn">pyquery</span> <span class="kn">import</span> <span class="n">PyQuery</span> <span class="k">as</span> <span class="n">pq</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+
+
+<span class="n">BASE_URL</span> <span class="o">=</span> <span class="s">&#39;http://www.austintexas.gov/health/restaurant/scores.cfm&#39;</span>
+<span class="n">FORM_URL</span> <span class="o">=</span> <span class="s">&#39;http://www.austintexas.gov/health/restaurant/search.cfm&#39;</span>
+<span class="n">LABELS</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;address&#39;</span><span class="p">,</span> <span class="s">&#39;city&#39;</span><span class="p">,</span> <span class="s">&#39;zipcode&#39;</span><span class="p">,</span> <span class="s">&#39;inspection_date&#39;</span><span class="p">,</span> <span class="s">&#39;score&#39;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>Determine the start and end dates available by scraping them</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">get_start_and_end_dates</span><span class="p">():</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">doc</span> <span class="o">=</span> <span class="n">pq</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">FORM_URL</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;#col3_content ul li b&#39;</span><span class="p">)]</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>Fetch all of the rows from the city and return them</p>
+<p>Note that this fetches <em>all</em> rows, so you need to filter out any
+that you don't want to deal with.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">get_all_rows_of_data</span><span class="p">():</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">get_start_and_end_dates</span><span class="p">()</span>
+    <span class="n">request_data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;begdate&#39;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span>
+        <span class="s">&#39;enddate&#39;</span><span class="p">:</span> <span class="n">end</span><span class="p">,</span>
+        <span class="s">&#39;selpara&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s">&#39;estabname&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span><span class="p">,</span>
+        <span class="s">&#39;estabcity&#39;</span><span class="p">:</span> <span class="s">&#39;All&#39;</span><span class="p">,</span>
+        <span class="s">&#39;estabzip&#39;</span><span class="p">:</span> <span class="s">&#39;All&#39;</span><span class="p">,</span>
+        <span class="s">&#39;Submit&#39;</span><span class="p">:</span> <span class="s">&#39;Search&#39;</span>
+    <span class="p">}</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">BASE_URL</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">request_data</span><span class="p">)</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">pq</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">doc</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;#col3_content table tr&#39;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <p>Generator that extracts a dictionary from a row</p>
+<p>This cleans up the data for a given row and turns it into a <code>dict</code>
+before yielding each row.  Since this is a generator, you need to
+iterate over the results in order to extract all of the rows.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">extract_raw_data</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+        <span class="n">raw_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="s">&#39;&#39;</span>
+                <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s">&#39;td&#39;</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">raw_data</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">yield</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">LABELS</span><span class="p">,</span> <span class="n">raw_data</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-7'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      <p>Scrapes the entire set of data and returns a list</p>
+<p>This is the main entry point for this module.  It's meant to be
+called, then iterated over to determine what values are provided.
+It does not group data, instead leaving that to the programmer
+consuming this data.</p>
+<p>You can return a raw generator by passing <code>generator=True</code> when
+calling this function.  That allows you to only iterate over the
+data once and not use any more memory than necessary.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">scrape</span><span class="p">(</span><span class="n">generator</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">result</span> <span class="o">=</span> <span class="n">extract_raw_data</span><span class="p">(</span><span class="n">get_all_rows_of_data</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">result</span> <span class="k">if</span> <span class="n">generator</span> <span class="k">else</span> <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>
